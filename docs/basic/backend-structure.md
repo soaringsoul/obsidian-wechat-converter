@@ -17,7 +17,7 @@
 
 ## CLI 接入面
 
-项目不提供用户可安装的产品 CLI。仓库 CLI 面主要是开发脚本：`npm run dev`、`npm run build`、`npm test`、`npm run scan:guard`、`npm run review:guard`、`npm run release:validate` 和 OpenPRD 的 `openprd status/doctor/validate`。
+项目不提供用户可安装的产品 CLI。仓库 CLI 面主要是开发脚本：`npm run dev`、`npm run build`、`npm test`、`npm run scan:guard`、`npm run review:guard`、`npm run release:validate`、`npm run deploy:local`（或仓库根目录 `./deploy-local.sh`）和 OpenPRD 的 `openprd status/doctor/validate`。`deploy:local` 只覆盖本机 Obsidian 插件运行时三件套，不写入 `data.json`，也不改变微信/飞书 API 契约。
 
 ## API 接入面
 

@@ -60,6 +60,10 @@ function buildH1Style(themeClass, type, color, fontSize, font, headingColor, con
       return `${base} text-align: left; color: ${headingColor}; background-image: linear-gradient(to right, ${color}, ${color}33); background-size: 100% 2px; background-repeat: no-repeat; background-position: bottom left; padding-bottom: 14px;`;
     case 'colorful-title':
       return `${base} color: #ffffff; background: ${color}; padding: 12px 18px; border-radius: 6px; box-shadow: 6px 6px 0 ${color}33;`;
+    case 'ditubang-title':
+      return `font-family: ${font}; display: block; font-size: ${fontSize}px; font-weight: 600; margin: 8px 0 18px; padding: 0 0 10px; color: ${headingColor}; text-align: left; line-height: 1.45; letter-spacing: 0.2px; border-bottom: 2px solid ${color};`;
+    case 'ditubang-rect-title':
+      return `font-family: ${font}; display: block; font-size: ${fontSize}px; font-weight: bold; margin: 24px 0 16px; color: ${headingColor}; text-align: left; line-height: 1.35;`;
     default: // none or unknown
       return this.joinStyleStrings(base, config.headingLetterSpacing ? `letter-spacing: ${config.headingLetterSpacing}px` : '');
   }
@@ -105,6 +109,10 @@ function buildH2Style(themeClass, type, color, fontSize, font, headingColor, con
       return `${base} color: #ffffff; background: ${color}; padding: 10px 16px; border-radius: 6px; box-shadow: 5px 5px 0 ${color}33;`;
     case 'colorful-chapter':
       return `${base} text-align: left; border-left: 4px solid ${color}; background: ${color}12; padding: 10px 14px; border-radius: 0 4px 4px 0;`;
+    case 'ditubang-chapter':
+      return `font-family: ${font}; display: inline-block; font-size: ${fontSize}px; font-weight: 600; margin: 26px 0 14px; padding: 4px 10px 3px; color: ${headingColor}; text-align: left; line-height: 1.6; max-width: 100%; box-sizing: border-box; background: #FFF3E8; border-left: 3px solid ${color}; border-top-left-radius: 4px; border-top-right-radius: 14px;`;
+    case 'ditubang-rect-chapter':
+      return `font-family: ${font}; display: block; font-size: ${fontSize}px; font-weight: bold; margin: 15px 0 10px; padding: 0; color: #000000; text-align: left; line-height: 1.5; max-width: 100%; box-sizing: border-box; background-image: linear-gradient(#faf36e, #faf36e); background-size: 100% 2px; background-repeat: no-repeat; background-position: left bottom;`;
     case 'paper-section':
       return `font-family: ${themeClass.FONTS.serif}; display: block; font-size: ${fontSize}px; font-weight: bold; margin: 34px 0 16px; color: ${headingColor}; text-align: left; line-height: 1.35; border-bottom: 1px solid ${color}55; padding-bottom: 8px;`;
     case 'grid-section':
@@ -149,6 +157,10 @@ function buildH3Style(themeClass, type, color, fontSize, font, headingColor, con
       return `font-family: ${themeClass.FONTS.serif}; display: block; font-size: ${fontSize}px; font-weight: bold; margin: 24px 0 12px; color: ${headingColor}; text-align: left; line-height: 1.35; padding-left: 10px; border-left: 3px double ${color};`;
     case 'typo-subhead':
       return `${base} font-weight: 700; color: ${headingColor};`;
+    case 'ditubang-section':
+      return `font-family: ${font}; display: inline-block; font-size: ${fontSize}px; font-weight: 600; margin: 16px 0 8px; padding-left: 8px; color: rgba(0, 0, 0, 0.72); text-align: left; line-height: 1.7; max-width: 100%; box-sizing: border-box; border-left: 4px solid ${color};`;
+    case 'ditubang-rect-section':
+      return `font-family: ${font}; display: block; font-size: ${fontSize}px; font-weight: bold; margin: 10px 0 1px; padding: 0; color: #666666; text-align: left; line-height: 1.45;`;
     default:
       return this.joinStyleStrings(base, config.headingLetterSpacing ? `letter-spacing: ${config.headingLetterSpacing}px` : '');
   }
@@ -183,6 +195,10 @@ function buildH4Style(themeClass, type, color, fontSize, font, headingColor) {
       return `${base} color: ${color}; background: ${color}12; padding: 4px 8px; border-radius: 4px; display: inline-block;`;
     case 'italic-serif':
       return `${base} font-style: italic; font-family: serif; border-bottom: 1px dashed #ccc; display: inline-block; padding-bottom: 2px;`;
+    case 'ditubang-kicker':
+      return `font-family: ${font}; display: inline-block; font-size: ${fontSize}px; font-weight: 600; margin: 14px 0 6px; color: rgba(0, 0, 0, 0.65); text-align: left; line-height: 1.7;`;
+    case 'ditubang-rect-kicker':
+      return `font-family: ${font}; display: block; font-size: ${fontSize}px; font-weight: bold; margin: 10px 0 1px; color: #666666; text-align: left; line-height: 1.45;`;
     default:
       return base;
   }

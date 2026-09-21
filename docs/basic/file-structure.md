@@ -16,6 +16,7 @@
 - `themes/`: 主题模块，当前核心文件是 `themes/apple-theme.js`。
 - `lib/`: 独立运行时库和单独构建的数学公式 bundle。
 - `scripts/`: 构建、生成、扫描风险、发布校验和性能测量脚本。
+- `deploy-local.sh`: 一键把当前构建同步到本机 Obsidian 插件目录；保留目标目录中的 `data.json`。
 - `tests/`: Vitest 单元测试和测试辅助模块。
 - `docs/`: 设计计划、交接文档、支持说明和 OpenPRD 基线文档。
 - `.openprd/`: OpenPRD 工作区、模板、标准、需求和协作元数据。

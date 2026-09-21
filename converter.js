@@ -387,7 +387,14 @@ class AppleStyleConverter {
     };
     rules.heading_open = (tokens, idx) => {
       const tag = getToken(tokens, idx).tag || 'h1';
-      return `<${tag} style="${this.getInlineStyle(tag)}">`;
+      const inner = this.getInlineStyle(`${tag} inner`);
+      const open = `<${tag} style="${this.getInlineStyle(tag)}">`;
+      return inner ? `${open}<span style="${inner}">` : open;
+    };
+    rules.heading_close = (tokens, idx) => {
+      const tag = getToken(tokens, idx).tag || 'h1';
+      const inner = this.getInlineStyle(`${tag} inner`);
+      return inner ? `</span></${tag}>` : `</${tag}>`;
     };
     rules.bullet_list_open = () => `<ul style="${this.getInlineStyle('ul')}">`;
     rules.ordered_list_open = () => `<ol style="${this.getInlineStyle('ol')}">`;
@@ -1006,6 +1013,7 @@ ${macHeader}
 
     let html = this.md.render(this.stripFrontmatter(markdown));
     html = this.fixListParagraphs(html);
+    html = this.fixBlockquoteParagraphs(html);
     html = this.unwrapFigures(html); // Fix: Remove <p> wrappers from <figure> to prevent empty lines
     html = this.removeBlockquoteParagraphMargins(html); // Fix: Remove margins from <p> inside <blockquote> for vertical centering
     html = this.fixMathJaxTags(html); // Fix: Replace <mjx-container> with WeChat-compatible tags
@@ -1103,6 +1111,18 @@ ${macHeader}
   fixListParagraphs(html) {
     const style = this.getInlineStyle('li p');
     return html.replace(/<li[^>]*>[\s\S]*?<\/li>/g, m => m.replace(/<p style="[^"]*">/g, `<p style="${style}">`));
+  }
+
+  /**
+   * @param {string} html
+   * @returns {string}
+   */
+  fixBlockquoteParagraphs(html) {
+    const style = this.getInlineStyle('blockquote p');
+    if (!style) return html;
+    return html.replace(/<blockquote\b[^>]*>[\s\S]*?<\/blockquote>/gi, (block) => (
+      block.replace(/<p style="[^"]*">/g, `<p style="${style}">`)
+    ));
   }
 
   /**

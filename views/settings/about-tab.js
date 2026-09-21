@@ -275,7 +275,7 @@ export function renderAboutSettingsTab(tabInstance, containerEl) {
 
   const authorCard = authorSection.createDiv({ cls: 'apple-settings-author-card' });
   authorCard.createEl('p', {
-    text: '作者：林小卫很行 (DavidLam)。一名热衷于提升生产力工具体验的开发者与创作者。相信工具的力量，让写作更优雅，让创作更自由。',
+    text: '作者：地图帮。一名热衷于提升生产力工具体验的开发者与创作者。相信工具的力量，让写作更优雅，让创作更自由。',
   });
 }
 

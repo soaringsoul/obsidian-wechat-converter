@@ -40,10 +40,12 @@ This file provides guidance to Codex when working with code in this repository.
 - **Markdown conversion core**: `converter.js`
   Handles markdown-it based conversion, HTML sanitization, callouts, image rendering, code block rendering, and WeChat-friendly output shaping.
 - **Theme system**: `themes/apple-theme.js`
-  There is one theme module with three built-in presets exposed in the UI:
-  - `github` -> `简约`
-  - `wechat` -> `经典`
-  - `serif` -> `优雅`
+ There is one theme module with built-in presets exposed in the UI, including:
+ - `ditubang` -> `地图帮默认` (factory default for new users, with `themeColor: orange`)
+ - `ditubang-rect` -> `地图帮矩形标题`
+ - `github` -> `简约`
+ - `wechat` -> `经典`
+ - `serif` -> `优雅`
 - **Service layer**: `services/`
   The codebase has evolved beyond a single converter file. Important modules include:
   - `render-pipeline.js`: creates the render pipeline used by the view.

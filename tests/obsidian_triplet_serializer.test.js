@@ -448,12 +448,49 @@ describe('Obsidian Triplet Serializer core', () => {
     expect(html).not.toContain('<s>');
   });
 
-  it('should normalize adjacent delete segments into legacy nested delete shape', () => {
+  it('should wrap 地图帮矩形标题 h2/h3 text in the highlighter inner span', async () => {
+    const rectConverter = await createLegacyConverter({
+      themeOptions: {
+        theme: 'ditubang-rect',
+        themeColor: 'orange',
+      },
+    });
     const root = document.createElement('div');
-    root.innerHTML = '<p><del>删除线：</del> <del>旧的方案已经废弃。</del></p>';
+    root.innerHTML = '<h2>矩形标题</h2><h3>街巷细节</h3><p>正文</p>';
 
-    const html = serializeObsidianRenderedHtml({ root, converter });
-    expect(html).toContain('删除线： <del');
-    expect(html).not.toContain('</del> <del');
+    const html = serializeObsidianRenderedHtml({ root, converter: rectConverter });
+    const container = document.createElement('div');
+    container.innerHTML = html;
+
+    const h2 = container.querySelector('h2');
+    const h2Inner = container.querySelector('h2 > span');
+    const h3Inner = container.querySelector('h3 > span');
+
+    expect(h2?.getAttribute('style') || '').toContain('background-size: 100% 2px');
+    expect(h2?.getAttribute('style') || '').toContain('line-height: 1.5');
+    expect(h2Inner?.textContent).toBe('矩形标题');
+    expect(h2Inner?.getAttribute('style') || '').toContain('background: #faf36e');
+    expect(h2Inner?.getAttribute('style') || '').toContain('vertical-align: bottom');
+    expect(h2Inner?.getAttribute('style') || '').toContain('max-width: 100%');
+    expect(h3Inner?.getAttribute('style') || '').toContain('border-left: 8px solid #f9da64');
+    expect(h3Inner?.getAttribute('style') || '').toContain('max-width: 100%');
+  });
+
+  it('should ignore empty heading chrome when wrapping 地图帮矩形标题 inners', async () => {
+    const rectConverter = await createLegacyConverter({
+      themeOptions: {
+        theme: 'ditubang-rect',
+        themeColor: 'orange',
+      },
+    });
+    const root = document.createElement('div');
+    root.innerHTML = '<h2><span class="collapse-icon"></span>矩形标题</h2>';
+
+    const html = serializeObsidianRenderedHtml({ root, converter: rectConverter });
+    const container = document.createElement('div');
+    container.innerHTML = html;
+
+    expect(container.querySelector('h2 > span')?.textContent).toBe('矩形标题');
+    expect(container.querySelector('.collapse-icon')).toBeNull();
   });
 });

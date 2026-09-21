@@ -76,9 +76,10 @@ function generateFallbackId() {
 /** @returns {PluginSettingsLike} */
 export function createDefaultSettings() {
   return {
-    theme: 'github',
-    themeColor: 'blue',
-    customColor: '#0366d6',
+    // New-user factory default: 地图帮默认 + 橙色. Saved theme/themeColor/customColor win on load.
+    theme: 'ditubang',
+    themeColor: 'orange',
+    customColor: '#fd7e14',
     quoteCalloutStyleMode: 'theme',
     fontFamily: 'sans-serif',
     fontSize: 3,

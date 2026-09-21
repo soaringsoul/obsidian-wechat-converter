@@ -12,7 +12,7 @@
     "node-fetch": "^2.7.0",
     "form-data": "^4.0.0"
   },
-  "author": "Indie Developer",
+  "author": "地图帮",
   "license": "MIT",
   "overrides": {
     "tar": "7.5.22"

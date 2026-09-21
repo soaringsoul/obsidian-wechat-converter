@@ -98,6 +98,7 @@ import {
  *   validateLink?: (href: string, isImage?: boolean) => string,
  *   resolveImagePath?: (src: string) => string,
  *   fixListParagraphs?: (html: string) => string,
+ *   fixBlockquoteParagraphs?: (html: string) => string,
  *   unwrapFigures?: (html: string) => string,
  *   removeBlockquoteParagraphMargins?: (html: string) => string,
  *   fixMathJaxTags?: (html: string) => string,
@@ -118,6 +119,61 @@ import {
  *   styleMarkup: string,
  * }} SvgStylePlaceholder
  */
+
+/**
+ * @param {Element | null | undefined} container
+ * @param {ConverterLike | null | undefined} converter
+ */
+function wrapHeadingInners(container, converter) {
+  if (!container || !converter) return;
+
+  for (const tag of ['h2', 'h3']) {
+    const innerStyle = getTagStyle(converter, `${tag} inner`);
+    if (!innerStyle) continue;
+
+    container.querySelectorAll(tag).forEach((heading) => {
+      if (heading.closest?.('svg')) return;
+
+      const text = String(heading.textContent || '')
+        .replace(/[\u200B-\u200D\uFEFF]/g, '')
+        .replace(/\u00a0/g, ' ')
+        .trim();
+      if (!text) return;
+
+      Array.from(heading.childNodes).forEach((node) => {
+        if (node.nodeType !== 1) return;
+        const el = /** @type {Element} */ (node);
+        const childText = String(el.textContent || '')
+          .replace(/[\u200B-\u200D\uFEFF]/g, '')
+          .replace(/\u00a0/g, ' ')
+          .trim();
+        if (!childText && !el.querySelector?.('img,svg')) {
+          el.remove();
+        }
+      });
+
+      const first = heading.firstElementChild;
+      if (
+        heading.childElementCount === 1
+        && first
+        && first.tagName === 'SPAN'
+        && first === heading.lastElementChild
+      ) {
+        first.setAttribute('style', innerStyle);
+        return;
+      }
+
+      const doc = heading.ownerDocument;
+      if (!doc) return;
+      const span = doc.createElement('span');
+      span.setAttribute('style', innerStyle);
+      while (heading.firstChild) {
+        span.appendChild(heading.firstChild);
+      }
+      heading.appendChild(span);
+    });
+  }
+}
 
 /**
  * @param {Element | null | undefined} container
@@ -154,6 +210,17 @@ function applyThemeInlineStyles(container, converter) {
       }
     });
   }
+
+  const quotePStyle = getTagStyle(converter, 'blockquote p');
+  if (quotePStyle) {
+    container.querySelectorAll('blockquote > p').forEach((p) => {
+      if (!p.closest?.('svg')) {
+        p.setAttribute('style', quotePStyle);
+      }
+    });
+  }
+
+  wrapHeadingInners(container, converter);
 }
 
 /**
@@ -377,6 +444,9 @@ function serializeObsidianRenderedHtml({
 
   if (converter && typeof converter.fixListParagraphs === 'function') {
     html = converter.fixListParagraphs(html);
+  }
+  if (converter && typeof converter.fixBlockquoteParagraphs === 'function') {
+    html = converter.fixBlockquoteParagraphs(html);
   }
   if (converter && typeof converter.unwrapFigures === 'function') {
     html = converter.unwrapFigures(html);

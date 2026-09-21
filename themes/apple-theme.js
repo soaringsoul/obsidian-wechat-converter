@@ -32,7 +32,7 @@
  */
 
 /**
- * @typedef {'github' | 'wechat' | 'serif' | 'paper' | 'grid' | 'typo' | 'media' | 'colorful'} AppleThemeName
+ * @typedef {'ditubang' | 'ditubang-rect' | 'github' | 'wechat' | 'serif' | 'paper' | 'grid' | 'typo' | 'media' | 'colorful'} AppleThemeName
  * @typedef {'blue' | 'green' | 'purple' | 'orange' | 'teal' | 'rose' | 'ruby' | 'slate'} AppleThemeColorName
  * @typedef {'sans-serif' | 'serif' | 'monospace'} AppleFontFamilyName
  * @typedef {1 | 2 | 3 | 4 | 5} AppleFontSizeName
@@ -59,6 +59,7 @@
  *   gridLineAlpha?: string,
  *   shiftHeadingDecorationsDown?: boolean,
  *   linkDecoration?: string,
+ *   linkColor?: string,
  *   blockquoteBorderWidth?: number,
  *   blockquoteBorderColor?: string,
  *   blockquoteBg?: string,
@@ -71,6 +72,25 @@
  *   figureBorderColor?: string,
  *   paragraphTextIndent?: string,
  *   strongBg?: boolean,
+ *   compactHeadings?: boolean,
+ *   textAlign?: string,
+ *   letterSpacing?: number,
+ *   strongColor?: string,
+ *   strongWeight?: number | string,
+ *   emColor?: string,
+ *   delColor?: string,
+ *   codeSurface?: string,
+ *   codeColor?: string,
+ *   codeBg?: string,
+ *   preBg?: string,
+ *   preColor?: string,
+ *   listPaddingLeft?: number,
+ *   listMargin?: string,
+ *   captionColor?: string,
+ *   figureChrome?: string,
+ *   imageRadius?: number,
+ *   hrColor?: string,
+ *   hrMargin?: number,
  * }} AppleThemeConfig
  * @typedef {{
  *   theme?: AppleThemeName | string,
@@ -130,9 +150,9 @@ class AppleTheme {
    */
   constructor(options = {}) {
     /** @type {AppleThemeName | string} */
-    this.themeName = typeof options.theme === 'string' && options.theme ? options.theme : 'github';
+    this.themeName = typeof options.theme === 'string' && options.theme ? options.theme : 'ditubang';
     /** @type {AppleThemeColorName | 'custom' | string} */
-    this.themeColor = typeof options.themeColor === 'string' && options.themeColor ? options.themeColor : 'blue';
+    this.themeColor = typeof options.themeColor === 'string' && options.themeColor ? options.themeColor : 'orange';
     /** @type {string | null} */
     this.customColor = typeof options.customColor === 'string' && options.customColor ? options.customColor : null;
     /** @type {'theme' | 'neutral' | string} */
@@ -179,7 +199,7 @@ class AppleTheme {
   getHeadingColorValue() {
     // 1. 如果未开启标题染色，返回默认深灰
     if (!this.coloredHeader) {
-      return '#3e3e3e';
+      return this.getThemeConfig().headingColor || '#3e3e3e';
     }
 
     // 2. 自定义颜色：自动计算变深 20%
@@ -272,49 +292,66 @@ class AppleTheme {
     const sectionSidePadding = this.getSectionSidePadding(config);
 
     // 间距微调有效值：全局覆盖优先，null/undefined 回退主题默认。
-    // 字距无主题级配置，默认 0；0 是合法值，必须用 ?? 保留 0（不能用 ||）。
+    // 字距：实例覆盖优先，否则用主题配置，再默认 0；0 是合法值，必须用 ?? 保留。
     const effectiveLineHeight = this.lineHeight ?? config.lineHeight;
     const effectiveParagraphGap = this.paragraphGap ?? config.paragraphGap;
-    const effectiveLetterSpacing = this.letterSpacing ?? 0;
+    const effectiveLetterSpacing = this.letterSpacing ?? config.letterSpacing ?? 0;
+    const paragraphAlign = config.textAlign || 'justify';
+    /** @param {'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'} level */
+    const headingSize = (level) => {
+      if (!config.compactHeadings) return sizes[level];
+      const offsets = { h1: 5, h2: 2, h3: 0, h4: 0, h5: 0, h6: 0 };
+      return sizes.base + (offsets[level] || 0);
+    };
 
     switch (tagName) {
       case 'section':
         // 使用配置的 sidePadding
         if (config.sectionBgStyle !== 'grid') {
           return this.joinStyleStrings(
-            `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; padding: 20px ${sectionSidePadding}px; background: ${config.sectionBg || '#ffffff'}; ${this.getSectionBoxSizingStyle(config)}max-width: 100%; word-wrap: break-word; word-break: normal; overflow-wrap: break-word; line-break: strict; text-align: justify`
+            `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; padding: 20px ${sectionSidePadding}px; background: ${config.sectionBg || '#ffffff'}; ${this.getSectionBoxSizingStyle(config)}max-width: 100%; word-wrap: break-word; word-break: normal; overflow-wrap: break-word; line-break: strict; text-align: ${paragraphAlign}`
           );
         }
 
         return this.joinStyleStrings(
-          `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; padding: 20px ${sectionSidePadding}px; box-sizing: border-box; max-width: 100%; word-wrap: break-word; word-break: normal; overflow-wrap: break-word; line-break: strict; text-align: justify`,
+          `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; padding: 20px ${sectionSidePadding}px; box-sizing: border-box; max-width: 100%; word-wrap: break-word; word-break: normal; overflow-wrap: break-word; line-break: strict; text-align: ${paragraphAlign}`,
           `background-color: ${config.sectionBg || '#ffffff'}`,
           `background-image: linear-gradient(${this.hexToRgba(color, config.gridLineAlpha || '09')} 1px, transparent 1px), linear-gradient(90deg, ${this.hexToRgba(color, config.gridLineAlpha || '09')} 1px, transparent 1px)`,
           config.sectionBgSize ? `background-size: ${config.sectionBgSize}` : ''
         );
 
-      case 'h1': return this.getH1Style(config.h1Decoration, color, sizes.h1, font, headingColor, config);
+      case 'h1': return this.getH1Style(config.h1Decoration, color, headingSize('h1'), font, headingColor, config);
       case 'h2':
         return config.shiftHeadingDecorationsDown
-          ? this.getH1Style(config.h1Decoration, color, sizes.h2, font, headingColor, config)
-          : this.getH2Style(config.h2Decoration, color, sizes.h2, font, headingColor, config);
+          ? this.getH1Style(config.h1Decoration, color, headingSize('h2'), font, headingColor, config)
+          : this.getH2Style(config.h2Decoration, color, headingSize('h2'), font, headingColor, config);
       case 'h3':
         return config.shiftHeadingDecorationsDown
-          ? this.getH2Style(config.h2Decoration, color, sizes.h3, font, headingColor, config)
-          : this.getH3Style(config.h3Decoration, color, sizes.h3, font, headingColor, config);
+          ? this.getH2Style(config.h2Decoration, color, headingSize('h3'), font, headingColor, config)
+          : this.getH3Style(config.h3Decoration, color, headingSize('h3'), font, headingColor, config);
       case 'h4':
         return config.shiftHeadingDecorationsDown
-          ? this.getH3Style(config.h3Decoration, color, sizes.h4, font, headingColor, config)
-          : this.getH4Style(config.h4Decoration, color, sizes.h4, font, headingColor);
+          ? this.getH3Style(config.h3Decoration, color, headingSize('h4'), font, headingColor, config)
+          : this.getH4Style(config.h4Decoration, color, headingSize('h4'), font, headingColor);
 
       case 'h5':
-        return this.getH5Style(config.h5Decoration, color, sizes.h5, font, headingColor);
+        return this.getH5Style(config.h5Decoration, color, headingSize('h5'), font, headingColor);
       case 'h6':
-        return this.getH6Style(config.h6Decoration, color, sizes.h6, font, headingColor, mutedTextColor);
+        return this.getH6Style(config.h6Decoration, color, headingSize('h6'), font, headingColor, mutedTextColor);
+      case 'h2 inner':
+        if (config.h2Decoration === 'ditubang-rect-chapter') {
+          return 'display: inline-block; font-weight: bold; background: #faf36e; color: #000000; padding: 3px 10px 1px; border-top-right-radius: 18px; border-top-left-radius: 3px; margin-right: 3px; line-height: 1.45; vertical-align: bottom; max-width: 100%; box-sizing: border-box;';
+        }
+        return '';
+      case 'h3 inner':
+        if (config.h3Decoration === 'ditubang-rect-section') {
+          return 'display: inline-block; padding-left: 8px; border-left: 8px solid #f9da64; line-height: 1.4; vertical-align: middle; max-width: 100%; box-sizing: border-box;';
+        }
+        return '';
 
       case 'p':
         return this.joinStyleStrings(
-          `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; margin: 0 0 ${effectiveParagraphGap}px 0; text-align: justify; text-align-last: left;${effectiveLetterSpacing ? ` letter-spacing: ${effectiveLetterSpacing}px;` : ' letter-spacing: 0;'} word-break: normal; overflow-wrap: break-word; line-break: strict`,
+          `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; margin: 0 0 ${effectiveParagraphGap}px 0; text-align: ${paragraphAlign};${paragraphAlign === 'justify' ? ' text-align-last: left;' : ''}${effectiveLetterSpacing ? ` letter-spacing: ${effectiveLetterSpacing}px;` : ' letter-spacing: 0;'} word-break: normal; overflow-wrap: break-word; line-break: strict`,
           config.paragraphTextIndent ? `text-indent: ${config.paragraphTextIndent}` : ''
         );
 
@@ -323,6 +360,31 @@ class AppleTheme {
 
 
       case 'blockquote':
+        if (config.blockquoteStyle === 'card') {
+          const cardBg = quoteCalloutStyleMode === 'neutral'
+            ? AppleTheme.QUOTE_CALLOUT_NEUTRAL_BG
+            : (config.blockquoteBg || '#FFF8F1');
+          const cardBorder = quoteCalloutStyleMode === 'neutral'
+            ? AppleTheme.QUOTE_NEUTRAL_BORDER
+            : (config.blockquoteBorderColor || `${color}33`);
+          const cardAccent = quoteCalloutStyleMode === 'neutral'
+            ? AppleTheme.QUOTE_NEUTRAL_BORDER
+            : color;
+          const cardText = config.blockquoteTextColor || 'rgba(0, 0, 0, 0.68)';
+          return `font-size: ${Math.max(sizes.base - 1, 13)}px; line-height: 1.85; color: ${cardText}; background: ${cardBg}; margin: 20px 0; padding: 12px 14px; border: 1px solid ${cardBorder}; border-left: ${config.blockquoteBorderWidth || 4}px solid ${cardAccent}; border-radius: ${r.md}px; box-sizing: border-box;`;
+        }
+        if (config.blockquoteStyle === 'note') {
+          const noteBg = quoteCalloutStyleMode === 'neutral'
+            ? AppleTheme.QUOTE_CALLOUT_NEUTRAL_BG
+            : (config.blockquoteBg || '#fff9ec');
+          const noteBorder = quoteCalloutStyleMode === 'neutral'
+            ? AppleTheme.QUOTE_NEUTRAL_BORDER
+            : (config.blockquoteBorderColor || '#f3c969');
+          const noteText = quoteCalloutStyleMode === 'neutral'
+            ? '#595959'
+            : (config.blockquoteTextColor || '#666666');
+          return `font-size: ${sizes.base}px; line-height: 1.85; color: ${noteText}; background: ${noteBg}; margin: 20px 0; padding: 10px 14px; border-left: ${config.blockquoteBorderWidth || 4}px solid ${noteBorder}; border-radius: 4px; box-sizing: border-box;`;
+        }
         if (config.blockquoteStyle === 'center') {
           const centeredBackground = quoteCalloutStyleMode === 'neutral'
             ? AppleTheme.QUOTE_CALLOUT_NEUTRAL_BG
@@ -375,16 +437,37 @@ class AppleTheme {
         // Font: Normal (removed italic) for better legibility on mobile
         return `font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: #595959; background: ${config.blockquoteBg || color + '1F'}; margin: ${s.md}px 0; padding: ${s.md}px; border-left: ${config.blockquoteBorderWidth}px solid ${config.blockquoteBorderColor || color}; border-radius: 3px;`;
 
+      case 'blockquote p':
+        if (config.blockquoteStyle === 'card') {
+          return `margin: 0; padding: 0; font-size: ${Math.max(sizes.base - 1, 13)}px; color: ${config.blockquoteTextColor || 'rgba(0, 0, 0, 0.68)'}; line-height: 1.85; letter-spacing: 0; text-indent: 0; text-align: left;`;
+        }
+        if (config.blockquoteStyle === 'note') {
+          return `margin: 0; padding: 0; font-size: ${sizes.base}px; color: ${config.blockquoteTextColor || '#666666'}; line-height: 1.85; letter-spacing: 0; text-indent: 0; text-align: left;`;
+        }
+        return '';
+
       case 'pre':
+        if (config.preBg) {
+          return `background: ${config.preBg}; border-radius: 6px; padding: 12px 14px; margin: 18px 0; overflow-x: auto; font-family: ${AppleTheme.FONTS.monospace}; font-size: ${sizes.code}px; line-height: 1.7; color: ${config.preColor || '#444444'};`;
+        }
+        if (config.codeSurface === 'neutral') {
+          return `background: #fafafa; border: 1px solid #f0f0f0; border-radius: ${r.md}px; padding: 14px 16px; margin: ${s.md}px 0; overflow-x: auto; font-family: ${AppleTheme.FONTS.monospace}; font-size: ${sizes.code}px; line-height: 1.7; color: ${textColor};`;
+        }
         return `background: #f6f8fa; border: 1px solid #e1e4e8; border-radius: ${r.md}px; padding: ${s.md}px; margin: ${s.md}px 0; overflow-x: auto; font-family: ${AppleTheme.FONTS.monospace}; font-size: ${sizes.code}px; line-height: 1.6; color: #24292e;`;
 
       case 'code':
+        if (config.codeColor || config.codeBg) {
+          return `background: ${config.codeBg || '#f8f8f8'}; color: ${config.codeColor || color}; padding: 2px 4px; border-radius: 3px; font-family: ${AppleTheme.FONTS.monospace}; font-size: ${sizes.code}px;`;
+        }
+        if (config.codeSurface === 'neutral') {
+          return `background: #fafafa; color: ${color}; padding: 2px 6px; margin: 0 2px; border: 1px solid #f0f0f0; border-radius: 4px; font-family: ${AppleTheme.FONTS.monospace}; font-size: ${sizes.code}px;`;
+        }
         return `background: ${color}1A; color: ${color}; padding: 2px 4px; border-radius: 3px; font-family: ${AppleTheme.FONTS.monospace}; font-size: ${sizes.code}px;`;
 
       case 'ul':
-        return `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; margin: 12px 0; padding-left: 20px; list-style-type: disc;`;
+        return `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; margin: ${config.listMargin || '12px 0'}; padding-left: ${config.listPaddingLeft || 20}px; list-style-type: disc;`;
       case 'ol':
-        return `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; margin: 12px 0; padding-left: 20px; list-style-type: decimal;`;
+        return `font-family: ${font}; font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; margin: ${config.listMargin || '12px 0'}; padding-left: ${config.listPaddingLeft || 20}px; list-style-type: decimal;`;
       case 'li':
         return `font-size: ${sizes.base}px; line-height: ${effectiveLineHeight}; color: ${textColor}; margin: 4px 0;${effectiveLetterSpacing ? ` letter-spacing: ${effectiveLetterSpacing}px;` : ''}`;
       case 'li-task':
@@ -396,18 +479,26 @@ class AppleTheme {
 
 
       case 'figure':
+        if (config.figureChrome === 'none') {
+          return `display: block; margin: 18px 0; text-align: center; padding: 0;`;
+        }
         // Fix: Restoring wireframe (border/padding) & balanced spacing (20px top/bottom)
         // No shadow for cleaner look
         return `display: block; margin: 20px 0; text-align: center; border: 1px solid ${config.figureBorderColor || '#e1e4e8'}; border-radius: ${r.md}px; padding: ${config.figurePadding || 10}px;`;
 
       case 'figcaption':
-        return `font-size: ${sizes.caption}px; color: #999; text-align: center; margin-top: ${s.sm}px;`;
+        return `font-size: ${sizes.caption}px; color: ${config.captionColor || '#999'}; text-align: center; margin-top: ${s.sm}px;`;
 
       case 'img':
-        return `display: block; margin: 0 auto; max-width: 100%; border-radius: 4px;`;
+        return `display: block; margin: 0 auto; max-width: 100%; border-radius: ${config.imageRadius || 4}px;`;
 
-      case 'a':
-        return `color: ${color}; text-decoration: ${config.linkDecoration}; border-bottom: ${config.linkDecoration === 'none' ? `1px dashed ${color}` : 'none'}; word-break: break-word; overflow-wrap: anywhere;`;
+      case 'a': {
+        const linkColor = config.linkColor || color;
+        if (config.linkDecoration === 'solid') {
+          return `color: ${linkColor}; text-decoration: none; border-bottom: 1px solid ${linkColor}59; word-break: break-word; overflow-wrap: anywhere;`;
+        }
+        return `color: ${linkColor}; text-decoration: ${config.linkDecoration}; border-bottom: ${config.linkDecoration === 'none' ? `1px dashed ${linkColor}` : 'none'}; word-break: break-word; overflow-wrap: anywhere;`;
+      }
 
       case 'table-wrapper':
         return `display: block; box-sizing: border-box; width: 100%; max-width: 100%; overflow-x: scroll; overflow-y: hidden; -webkit-overflow-scrolling: touch; margin: ${s.md}px 0; padding-bottom: 10px;`;
@@ -418,19 +509,20 @@ class AppleTheme {
       case 'td':
         return `border: 1px solid ${config.tableBorderColor || '#e1e4e8'}; padding: ${config.tableCellPadding || 12}px; text-align: left; white-space: nowrap; word-break: keep-all; overflow-wrap: normal;`;
       case 'thead':
-        return `background: #f6f8fa;`;
+        return `background: ${config.tableHeaderBg || '#f6f8fa'};`;
 
       case 'hr':
-        return `border: 0; border-top: 1px solid rgba(0,0,0,0.08); margin: 40px 0;`;
+        return `border: 0; border-top: 1px solid ${config.hrColor || 'rgba(0,0,0,0.08)'}; margin: ${config.hrMargin || 40}px 0; max-width: 100%; box-sizing: border-box;`;
 
       case 'strong':
-        return config.strongBg
-          ? `font-weight: bold; color: ${color}; background: ${color}18; padding: 0 3px; border-radius: 3px;`
-          : `font-weight: bold; color: ${color};`;
+        if (config.strongBg) {
+          return `font-weight: bold; color: ${color}; background: ${color}18; padding: 0 3px; border-radius: 3px;`;
+        }
+        return `font-weight: ${config.strongWeight || 'bold'}; color: ${config.strongColor || color};`;
       case 'em':
-        return `font-style: italic;`;
+        return config.emColor ? `font-style: italic; color: ${config.emColor};` : `font-style: italic;`;
       case 'del':
-        return `text-decoration: line-through; color: #999;`;
+        return `text-decoration: line-through; color: ${config.delColor || '#999'};`;
       case 'mark':
         return `background-color: #fff1a8; padding: 0 2px; border-radius: 2px;`;
 

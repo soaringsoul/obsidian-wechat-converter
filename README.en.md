@@ -313,6 +313,12 @@ If you cannot access the community plugin market:
 - Chinese documentation: [README.md](./README.md)
 - Release notes: [RELEASE_NOTES](./RELEASE_NOTES/)
 
+## Author
+
+**地图帮**
+
+If you have questions, suggestions, or find a bug, please open a GitHub Issue.
+
 ## License
 
 MIT

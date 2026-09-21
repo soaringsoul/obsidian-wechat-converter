@@ -145,5 +145,8 @@ describe('Settings - About Tab & Sponsor Hall of Fame', () => {
 
     const copyBtn = containerEl.querySelector('.apple-settings-community-copy-btn');
     expect(copyBtn?.textContent).toBe('复制微信号');
+
+    const authorCard = containerEl.querySelector('.apple-settings-author-card');
+    expect(authorCard?.textContent).toContain('作者：地图帮');
   });
 });

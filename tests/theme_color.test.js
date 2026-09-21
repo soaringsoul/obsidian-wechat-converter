@@ -75,10 +75,19 @@ describe('AppleTheme Color Logic', () => {
 
     it('should return default dark grey when coloredHeader is false', () => {
       const theme = new AppleTheme({
+        theme: 'github',
         themeColor: 'purple',
         coloredHeader: false
       });
       expect(theme.getHeadingColorValue()).toBe('#3e3e3e');
+    });
+
+    it('should use 地图帮默认 and orange when constructed without options', () => {
+      const theme = new AppleTheme();
+      expect(theme.themeName).toBe('ditubang');
+      expect(theme.themeColor).toBe('orange');
+      expect(theme.getThemeConfig().name).toBe('地图帮默认');
+      expect(theme.getThemeColorValue()).toBe('#fd7e14');
     });
 
     it('should return deep purple when coloredHeader is true and theme is purple', () => {
@@ -159,6 +168,8 @@ describe('AppleTheme Color Logic', () => {
       const themeList = AppleTheme.getThemeList();
 
       expect(themeList).toEqual([
+        { value: 'ditubang', label: '地图帮默认' },
+        { value: 'ditubang-rect', label: '地图帮矩形标题' },
         { value: 'github', label: '简约' },
         { value: 'wechat', label: '经典' },
         { value: 'serif', label: '优雅' },
@@ -335,6 +346,71 @@ describe('AppleTheme Color Logic', () => {
           expect(paragraphStyle).not.toContain('text-indent:');
         }
       }
+    });
+
+    it('should render 地图帮默认 as a restrained orange column theme', () => {
+      const theme = new AppleTheme({
+        theme: 'ditubang',
+        themeColor: 'orange',
+        fontSize: 2,
+      });
+
+      expect(theme.getThemeConfig().name).toBe('地图帮默认');
+      expect(theme.getStyle('p')).toContain('text-align: left');
+      expect(theme.getStyle('p')).not.toContain('text-indent:');
+      expect(theme.getStyle('p')).toContain('letter-spacing: 0.3px');
+      expect(theme.getStyle('p')).toContain('line-height: 1.95');
+      expect(theme.getStyle('section')).toContain('text-align: left');
+      expect(theme.getStyle('h1')).toContain('text-align: left');
+      expect(theme.getStyle('h1')).toContain('border-bottom: 2px solid #fd7e14');
+      expect(theme.getStyle('h1')).toContain('font-size: 20px');
+      expect(theme.getStyle('h2')).toContain('background: #FFF3E8');
+      expect(theme.getStyle('h2')).toContain('border-left: 3px solid #fd7e14');
+      expect(theme.getStyle('h2')).toContain('border-top-right-radius: 14px');
+      expect(theme.getStyle('h3')).toContain('border-left: 4px solid #fd7e14');
+      expect(theme.getStyle('blockquote')).toContain('background: #FFF8F1');
+      expect(theme.getStyle('blockquote')).toContain('border-left: 2px solid #fd7e14');
+      expect(theme.getStyle('blockquote')).toContain('border: 1px solid #F6E7D8');
+      expect(theme.getStyle('blockquote p')).toContain('text-indent: 0');
+      expect(theme.getStyle('strong')).toContain('color: rgba(0, 0, 0, 0.92)');
+      expect(theme.getStyle('a')).toContain('border-bottom: 1px solid #fd7e1459');
+    });
+
+    it('should render 地图帮矩形标题 as a yellow highlighter heading theme', () => {
+      const theme = new AppleTheme({
+        theme: 'ditubang-rect',
+        themeColor: 'orange',
+        fontSize: 2,
+      });
+
+      expect(theme.getThemeConfig().name).toBe('地图帮矩形标题');
+      expect(theme.getStyle('p')).toContain('text-align: left');
+      expect(theme.getStyle('p')).not.toContain('text-indent:');
+      expect(theme.getStyle('p')).toContain('letter-spacing: 0.2px');
+      expect(theme.getStyle('p')).toContain('line-height: 1.9');
+      expect(theme.getStyle('p')).toContain('color: #4a4a4a');
+      expect(theme.getStyle('h2')).toContain('line-height: 1.5');
+      expect(theme.getStyle('h2')).toContain('background-size: 100% 2px');
+      expect(theme.getStyle('h2')).toContain('max-width: 100%');
+      expect(theme.getStyle('h2')).not.toContain('line-height: 1;');
+      expect(theme.getStyle('h2')).not.toContain('border-bottom: 2px solid #faf36e');
+      expect(theme.getStyle('h2 inner')).toContain('background: #faf36e');
+      expect(theme.getStyle('h2 inner')).toContain('border-top-right-radius: 18px');
+      expect(theme.getStyle('h2 inner')).toContain('vertical-align: bottom');
+      expect(theme.getStyle('h2 inner')).toContain('max-width: 100%');
+      expect(theme.getStyle('h3')).toContain('color: #666666');
+      expect(theme.getStyle('h3')).not.toContain('border-left:');
+      expect(theme.getStyle('h3 inner')).toContain('border-left: 8px solid #f9da64');
+      expect(theme.getStyle('h3 inner')).toContain('display: inline-block');
+      expect(theme.getStyle('h3 inner')).toContain('max-width: 100%');
+      expect(theme.getStyle('hr')).toContain('max-width: 100%');
+      expect(theme.getStyle('blockquote')).toContain('background: #fff9ec');
+      expect(theme.getStyle('blockquote')).toContain('border-left: 4px solid #f3c969');
+      expect(theme.getStyle('blockquote')).not.toContain('border: 1px solid');
+      expect(theme.getStyle('blockquote p')).toContain('text-indent: 0');
+      expect(theme.getStyle('strong')).toContain('color: #c85d4d');
+      expect(theme.getStyle('a')).toContain('color: #d86b5b');
+      expect(theme.getStyle('code')).toContain('color: #d86b5b');
     });
   });
 

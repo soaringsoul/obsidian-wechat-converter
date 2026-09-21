@@ -21,6 +21,7 @@
 - `npm run generate:styles`: 生成 `styles.css`。
 - `npm run dev`: 生成运行时并启动开发构建。
 - `npm run build`: 生成生产构建。
+- `npm run deploy:local` / `./deploy-local.sh`: 构建并把 `main.js`、`manifest.json`、`styles.css` 同步到本机 Obsidian 插件目录。
 - `npm test`: 运行 Vitest。
 - `npm run scan:guard`: 运行 lint、Node 内置模块静态导入检查与其他 Obsidian 扫描风险检查。
 - `npm run review:guard`: 发布前综合门禁，包含扫描、样式、构建产物、测试、打包和发布校验。
